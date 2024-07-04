@@ -1,0 +1,28 @@
+{
+    "compilerOptions": {
+        "target": "ES2015",
+        "useDefineForClassFields": true,
+        "lib": [
+            "ES2023",
+        ],
+        "module": "NodeNext",
+        "skipLibCheck": true,
+        /* Bundler mode */
+        "moduleResolution": "NodeNext",
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+        "isolatedModules": true,
+        "rootDir": "./src",
+        "outDir": "./dist",
+        /* Emit */
+        "declaration": true,
+        /* Linting */
+        "strict": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noFallthroughCasesInSwitch": true,
+    },
+    "include": [
+        "src",
+    ],
+}
