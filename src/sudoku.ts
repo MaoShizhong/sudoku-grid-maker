@@ -1,5 +1,7 @@
 import { Cell } from './cell';
+import { PlacementError } from './error';
 import { Region } from './region';
+import { SudokuNumber } from './types';
 
 export default class Sudoku {
     static #BOARD_RESOLUTION = 9;
@@ -13,6 +15,63 @@ export default class Sudoku {
         this.rows = this.#createRows();
         this.columns = this.#createColumns();
         this.boxes = this.#createBoxes();
+    }
+
+    addNumber({
+        number,
+        row,
+        column,
+    }: {
+        number: SudokuNumber;
+        row: number;
+        column: number;
+    }): void {
+        const targetCell = this.grid[row][column];
+        const placementErrorDetails = {
+            isAlreadyInRow: false,
+            isAlreadyInColumn: false,
+            isAlreadyInBox: false,
+        };
+
+        const isTargetCell = (cell: Cell): boolean => cell === targetCell;
+        let canPlaceNumber = true;
+
+        for (let i = 0; i < Sudoku.#BOARD_RESOLUTION; i++) {
+            const cellInRow = this.rows[i].cells.find(isTargetCell);
+            const cellInColumn = this.columns[i].cells.find(isTargetCell);
+            const cellInBox = this.boxes[i].cells.find(isTargetCell);
+
+            if (!cellInRow && !cellInColumn && !cellInBox) {
+                continue;
+            }
+
+            const canPlaceInRow = this.rows[i].canPlaceNumber(number);
+            const canPlaceInColumn = this.columns[i].canPlaceNumber(number);
+            const canPlaceInBox = this.boxes[i].canPlaceNumber(number);
+
+            if (cellInRow && !canPlaceInRow) {
+                placementErrorDetails.isAlreadyInRow = true;
+            }
+            if (cellInColumn && !canPlaceInColumn) {
+                placementErrorDetails.isAlreadyInColumn = true;
+            }
+            if (cellInBox && !canPlaceInBox) {
+                placementErrorDetails.isAlreadyInBox = true;
+            }
+
+            canPlaceNumber = Object.values(placementErrorDetails).every(
+                (value): boolean => value === false
+            );
+            if (!canPlaceNumber) {
+                break;
+            }
+        }
+
+        if (canPlaceNumber) {
+            targetCell.value = number;
+        } else {
+            throw new PlacementError(placementErrorDetails);
+        }
     }
 
     #createGrid(): Cell[][] {
