@@ -26,8 +26,8 @@ export default class Sudoku {
         row: number;
         column: number;
     }): void {
-        const targetCell = this.grid[row][column];
-        if (targetCell.value === number) {
+        const targetCell = this.grid[row]?.[column];
+        if (!targetCell || targetCell.value === number) {
             return;
         }
 
@@ -79,7 +79,10 @@ export default class Sudoku {
     }
 
     removeNumber({ row, column }: { row: number; column: number }): void {
-        this.grid[row][column].value = null;
+        const targetCell = this.grid[row]?.[column];
+        if (targetCell) {
+            targetCell.value = null;
+        }
     }
 
     #createGrid(): Cell[][] {

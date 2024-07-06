@@ -1,6 +1,7 @@
 import { Cell } from '../cell';
 import { Region } from '../region';
 import Sudoku from '../sudoku';
+import { CellValue } from '../types';
 
 describe('Sudoku grid', (): void => {
     const sudoku = new Sudoku();
@@ -117,6 +118,19 @@ describe('Regions', (): void => {
 
 describe('Methods', (): void => {
     describe('addNumber', (): void => {
+        it('does nothing if targeting out of bounds of the grid', (): void => {
+            const sudoku = new Sudoku();
+
+            sudoku.addNumber({ number: 5, row: 234, column: 10 });
+            const gridCellValues = sudoku.grid
+                .flat()
+                .map((cell): CellValue => cell.value);
+            const valuesInGrid = new Set(gridCellValues);
+
+            expect(valuesInGrid.size).toBe(1);
+            expect(valuesInGrid.has(null)).toBe(true);
+        });
+
         it('sets single digit number to cell if not already in row/column/box', (): void => {
             const sudoku = new Sudoku();
 
@@ -178,6 +192,19 @@ describe('Methods', (): void => {
     });
 
     describe('removeNumber', (): void => {
+        it('does nothing if targeting out of bounds of the grid', (): void => {
+            const sudoku = new Sudoku();
+
+            sudoku.removeNumber({ row: 234, column: 10 });
+            const gridCellValues = sudoku.grid
+                .flat()
+                .map((cell): CellValue => cell.value);
+            const valuesInGrid = new Set(gridCellValues);
+
+            expect(valuesInGrid.size).toBe(1);
+            expect(valuesInGrid.has(null)).toBe(true);
+        });
+
         it("removes a cell's number", (): void => {
             const sudoku = new Sudoku();
 
