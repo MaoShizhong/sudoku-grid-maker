@@ -221,5 +221,76 @@ describe('Methods', (): void => {
         });
     });
 
-    describe('addPencilMark', (): void => {});
+    describe('addPencilMark', (): void => {
+        it('does nothing if targeting out of bounds of the grid', (): void => {
+            const sudoku = new Sudoku();
+
+            sudoku.addPencilMark({ number: 5, row: 234, column: 10 });
+            const gridCells = sudoku.grid.flat();
+            const hasPencilMarksAdded = gridCells.some(
+                (cell): boolean => cell.pencilMarks.size > 0
+            );
+
+            expect(hasPencilMarksAdded).toBe(false);
+        });
+
+        it('adds a pencil mark to a cell with no pencil marks', (): void => {
+            const sudoku = new Sudoku();
+
+            sudoku.addPencilMark({ number: 2, row: 4, column: 6 });
+            expect(sudoku.grid[4][6].pencilMarks.size).toBe(1);
+            expect(sudoku.grid[4][6].pencilMarks.has(2)).toBe(true);
+
+            sudoku.addPencilMark({ number: 5, row: 1, column: 1 });
+            expect(sudoku.grid[1][1].pencilMarks.size).toBe(1);
+            expect(sudoku.grid[1][1].pencilMarks.has(5)).toBe(true);
+        });
+
+        it('adds a pencil mark to a cell with existing pencil marks', (): void => {
+            const sudoku = new Sudoku();
+
+            sudoku.addPencilMark({ number: 5, row: 1, column: 1 });
+            expect(sudoku.grid[1][1].pencilMarks.size).toBe(1);
+            expect(sudoku.grid[1][1].pencilMarks.has(5)).toBe(true);
+
+            sudoku.addPencilMark({ number: 8, row: 1, column: 1 });
+            expect(sudoku.grid[1][1].pencilMarks.size).toBe(2);
+            expect(sudoku.grid[1][1].pencilMarks.has(8)).toBe(true);
+        });
+    });
+
+    describe('removePencilMark', (): void => {
+        it('does nothing if targeting out of bounds of the grid', (): void => {
+            const sudoku = new Sudoku();
+
+            sudoku.removePencilMark({ number: 5, row: 234, column: 10 });
+            const gridCells = sudoku.grid.flat();
+            const hasPencilMarksAdded = gridCells.some(
+                (cell): boolean => cell.pencilMarks.size > 0
+            );
+
+            expect(hasPencilMarksAdded).toBe(false);
+        });
+
+        it("does nothing if target pencil mark doesn't exist", (): void => {
+            const sudoku = new Sudoku();
+
+            sudoku.removePencilMark({ number: 5, row: 0, column: 0 });
+            expect(sudoku.grid[0][0].pencilMarks.size).toBe(0);
+        });
+
+        it('removes a pencil mark from a cell', (): void => {
+            const sudoku = new Sudoku();
+
+            sudoku.addPencilMark({ number: 2, row: 4, column: 6 });
+            sudoku.removePencilMark({ number: 2, row: 4, column: 6 });
+            expect(sudoku.grid[4][6].pencilMarks.size).toBe(0);
+
+            sudoku.addPencilMark({ number: 5, row: 1, column: 1 });
+            sudoku.addPencilMark({ number: 8, row: 1, column: 1 });
+            sudoku.removePencilMark({ number: 5, row: 1, column: 1 });
+            expect(sudoku.grid[1][1].pencilMarks.size).toBe(1);
+            expect(sudoku.grid[1][1].pencilMarks.has(8)).toBe(true);
+        });
+    });
 });
