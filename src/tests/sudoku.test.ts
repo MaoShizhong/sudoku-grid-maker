@@ -114,3 +114,60 @@ describe('Regions', (): void => {
         });
     });
 });
+
+describe('Methods', (): void => {
+    describe('addNumber', (): void => {
+        it('adds single digit number to cell if not already in row/column/box', (): void => {
+            const sudoku = new Sudoku();
+
+            sudoku.addNumber({ number: 5, row: 0, column: 0 });
+            expect(sudoku.grid[0][0].value).toBe(5);
+
+            sudoku.addNumber({ number: 1, row: 2, column: 0 });
+            expect(sudoku.grid[2][0].value).toBe(1);
+
+            sudoku.addNumber({ number: 9, row: 8, column: 7 });
+            expect(sudoku.grid[8][7].value).toBe(9);
+        });
+
+        it('throws if row already contains number', (): void => {
+            expect.assertions(1);
+            const sudoku = new Sudoku();
+
+            sudoku.addNumber({ number: 5, row: 0, column: 0 });
+            try {
+                sudoku.addNumber({ number: 5, row: 0, column: 7 });
+            } catch (error) {
+                expect(error).toHaveProperty('isAlreadyInRow', true);
+            }
+        });
+
+        it('throws if column already contains number', (): void => {
+            expect.assertions(1);
+            const sudoku = new Sudoku();
+
+            sudoku.addNumber({ number: 5, row: 0, column: 0 });
+            try {
+                sudoku.addNumber({ number: 5, row: 7, column: 0 });
+            } catch (error) {
+                expect(error).toHaveProperty('isAlreadyInColumn', true);
+            }
+        });
+
+        it('throws if box already contains number', (): void => {
+            expect.assertions(1);
+            const sudoku = new Sudoku();
+
+            sudoku.addNumber({ number: 5, row: 0, column: 0 });
+            try {
+                sudoku.addNumber({ number: 5, row: 1, column: 1 });
+            } catch (error) {
+                expect(error).toHaveProperty('isAlreadyInBox', true);
+            }
+        });
+    });
+
+    describe('removeNumber', (): void => {});
+
+    describe('addPencilMark', (): void => {});
+});
