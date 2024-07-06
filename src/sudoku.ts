@@ -74,6 +74,10 @@ export default class Sudoku {
         }
     }
 
+    removeNumber({ row, column }: { row: number; column: number }): void {
+        this.grid[row][column].value = null;
+    }
+
     #createGrid(): Cell[][] {
         const grid: Cell[][] = [];
         for (let i = 0; i < Sudoku.#BOARD_RESOLUTION; i++) {
