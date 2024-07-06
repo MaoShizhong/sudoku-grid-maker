@@ -167,7 +167,22 @@ describe('Methods', (): void => {
         });
     });
 
-    describe('removeNumber', (): void => {});
+    describe('removeNumber', (): void => {
+        it("removes a cell's number", (): void => {
+            const sudoku = new Sudoku();
+
+            sudoku.addNumber({ number: 5, row: 0, column: 0 });
+            sudoku.addNumber({ number: 8, row: 4, column: 8 });
+
+            sudoku.removeNumber({ row: 0, column: 0 });
+            sudoku.removeNumber({ row: 4, column: 8 });
+            sudoku.removeNumber({ row: 7, column: 3 });
+
+            expect(sudoku.grid[0][0].value).toBe(null);
+            expect(sudoku.grid[4][8].value).toBe(null);
+            expect(sudoku.grid[7][3].value).toBe(null);
+        });
+    });
 
     describe('addPencilMark', (): void => {});
 });
