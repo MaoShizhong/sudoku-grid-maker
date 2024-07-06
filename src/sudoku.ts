@@ -27,6 +27,10 @@ export default class Sudoku {
         column: number;
     }): void {
         const targetCell = this.grid[row][column];
+        if (targetCell.value === number) {
+            return;
+        }
+
         const placementErrorDetails = {
             isAlreadyInRow: false,
             isAlreadyInColumn: false,

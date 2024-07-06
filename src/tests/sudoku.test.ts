@@ -117,7 +117,7 @@ describe('Regions', (): void => {
 
 describe('Methods', (): void => {
     describe('addNumber', (): void => {
-        it('adds single digit number to cell if not already in row/column/box', (): void => {
+        it('sets single digit number to cell if not already in row/column/box', (): void => {
             const sudoku = new Sudoku();
 
             sudoku.addNumber({ number: 5, row: 0, column: 0 });
@@ -128,6 +128,16 @@ describe('Methods', (): void => {
 
             sudoku.addNumber({ number: 9, row: 8, column: 7 });
             expect(sudoku.grid[8][7].value).toBe(9);
+        });
+
+        it('does not throw if target cell contains same number', (): void => {
+            const sudoku = new Sudoku();
+
+            sudoku.addNumber({ number: 5, row: 0, column: 0 });
+            expect((): void =>
+                sudoku.addNumber({ number: 5, row: 0, column: 0 })
+            ).not.toThrow();
+            expect(sudoku.grid[0][0].value).toBe(5);
         });
 
         it('throws if row already contains number', (): void => {
