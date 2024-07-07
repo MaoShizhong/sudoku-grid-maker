@@ -85,6 +85,36 @@ export default class Sudoku {
         }
     }
 
+    addPencilMark({
+        number,
+        row,
+        column,
+    }: {
+        number: SudokuNumber;
+        row: number;
+        column: number;
+    }): void {
+        const targetCell = this.grid[row]?.[column];
+        if (targetCell) {
+            targetCell.addPencilMark(number);
+        }
+    }
+
+    removePencilMark({
+        number,
+        row,
+        column,
+    }: {
+        number: SudokuNumber;
+        row: number;
+        column: number;
+    }): void {
+        const targetCell = this.grid[row]?.[column];
+        if (targetCell) {
+            targetCell.removePencilMark(number);
+        }
+    }
+
     #createGrid(): Cell[][] {
         const grid: Cell[][] = [];
         for (let i = 0; i < Sudoku.#BOARD_RESOLUTION; i++) {
