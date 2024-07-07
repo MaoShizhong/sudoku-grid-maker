@@ -1,12 +1,21 @@
 import { CellValue, SudokuNumber } from './types';
 
 export class Cell {
-    value: CellValue;
+    #value: CellValue;
     #pencilMarks: Set<SudokuNumber>;
 
     constructor(value: CellValue = null) {
-        this.value = value;
+        this.#value = value;
         this.#pencilMarks = new Set();
+    }
+
+    get value(): CellValue {
+        return this.#value;
+    }
+
+    set value(number: CellValue) {
+        this.#pencilMarks.clear();
+        this.#value = number;
     }
 
     get pencilMarks(): Set<SudokuNumber> {
@@ -14,7 +23,7 @@ export class Cell {
     }
 
     addPencilMark(number: SudokuNumber): void {
-        if (this.pencilMarks.has(number)) {
+        if (this.#value !== null || this.pencilMarks.has(number)) {
             return;
         }
 
