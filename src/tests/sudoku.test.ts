@@ -121,7 +121,7 @@ describe('Methods', (): void => {
         it('does nothing if targeting out of bounds of the grid', (): void => {
             const sudoku = new Sudoku();
 
-            sudoku.addNumber({ number: 5, row: 234, column: 10 });
+            sudoku.addNumber({ newNumber: 5, row: 234, column: 10 });
             const gridCellValues = sudoku.grid
                 .flat()
                 .map((cell): CellValue => cell.value);
@@ -134,22 +134,25 @@ describe('Methods', (): void => {
         it('sets single digit number to cell if not already in row/column/box', (): void => {
             const sudoku = new Sudoku();
 
-            sudoku.addNumber({ number: 5, row: 0, column: 0 });
+            sudoku.addNumber({ newNumber: 5, row: 0, column: 0 });
             expect(sudoku.grid[0][0].value).toBe(5);
 
-            sudoku.addNumber({ number: 1, row: 2, column: 0 });
+            sudoku.addNumber({ newNumber: 1, row: 2, column: 0 });
             expect(sudoku.grid[2][0].value).toBe(1);
 
-            sudoku.addNumber({ number: 9, row: 8, column: 7 });
+            sudoku.addNumber({ newNumber: 9, row: 8, column: 7 });
             expect(sudoku.grid[8][7].value).toBe(9);
+
+            sudoku.addNumber({ newNumber: 4, row: 8, column: 7 });
+            expect(sudoku.grid[8][7].value).toBe(4);
         });
 
         it('does not throw if target cell contains same number', (): void => {
             const sudoku = new Sudoku();
 
-            sudoku.addNumber({ number: 5, row: 0, column: 0 });
+            sudoku.addNumber({ newNumber: 5, row: 0, column: 0 });
             expect((): void =>
-                sudoku.addNumber({ number: 5, row: 0, column: 0 })
+                sudoku.addNumber({ newNumber: 5, row: 0, column: 0 })
             ).not.toThrow();
             expect(sudoku.grid[0][0].value).toBe(5);
         });
@@ -158,9 +161,9 @@ describe('Methods', (): void => {
             expect.assertions(1);
             const sudoku = new Sudoku();
 
-            sudoku.addNumber({ number: 5, row: 0, column: 0 });
+            sudoku.addNumber({ newNumber: 5, row: 0, column: 0 });
             try {
-                sudoku.addNumber({ number: 5, row: 0, column: 7 });
+                sudoku.addNumber({ newNumber: 5, row: 0, column: 7 });
             } catch (error) {
                 expect(error).toHaveProperty('isAlreadyInRow', true);
             }
@@ -170,9 +173,9 @@ describe('Methods', (): void => {
             expect.assertions(1);
             const sudoku = new Sudoku();
 
-            sudoku.addNumber({ number: 5, row: 0, column: 0 });
+            sudoku.addNumber({ newNumber: 5, row: 0, column: 0 });
             try {
-                sudoku.addNumber({ number: 5, row: 7, column: 0 });
+                sudoku.addNumber({ newNumber: 5, row: 7, column: 0 });
             } catch (error) {
                 expect(error).toHaveProperty('isAlreadyInColumn', true);
             }
@@ -182,9 +185,9 @@ describe('Methods', (): void => {
             expect.assertions(1);
             const sudoku = new Sudoku();
 
-            sudoku.addNumber({ number: 5, row: 0, column: 0 });
+            sudoku.addNumber({ newNumber: 5, row: 0, column: 0 });
             try {
-                sudoku.addNumber({ number: 5, row: 1, column: 1 });
+                sudoku.addNumber({ newNumber: 5, row: 1, column: 1 });
             } catch (error) {
                 expect(error).toHaveProperty('isAlreadyInBox', true);
             }
@@ -208,8 +211,8 @@ describe('Methods', (): void => {
         it("removes a cell's number", (): void => {
             const sudoku = new Sudoku();
 
-            sudoku.addNumber({ number: 5, row: 0, column: 0 });
-            sudoku.addNumber({ number: 8, row: 4, column: 8 });
+            sudoku.addNumber({ newNumber: 5, row: 0, column: 0 });
+            sudoku.addNumber({ newNumber: 8, row: 4, column: 8 });
 
             sudoku.removeNumber({ row: 0, column: 0 });
             sudoku.removeNumber({ row: 4, column: 8 });

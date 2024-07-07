@@ -18,24 +18,24 @@ export default class Sudoku {
     }
 
     addNumber({
-        number,
+        newNumber,
         row,
         column,
     }: {
-        number: SudokuNumber;
+        newNumber: SudokuNumber;
         row: number;
         column: number;
     }): void {
         const targetCell = this.grid[row]?.[column];
-        if (!targetCell || targetCell.value === number) {
+        if (!targetCell || targetCell.value === newNumber) {
             return;
         }
 
         const [canPlaceNumber, placementErrorDetails] =
-            this.#checkPlacementValidity(targetCell, number);
+            this.#checkPlacementValidity(targetCell, newNumber);
 
         if (canPlaceNumber) {
-            targetCell.value = number;
+            targetCell.value = newNumber;
         } else {
             throw new PlacementError(placementErrorDetails);
         }
