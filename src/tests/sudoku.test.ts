@@ -297,3 +297,28 @@ describe('Methods', (): void => {
         });
     });
 });
+
+describe('Number/pencil mark interactions', (): void => {
+    it('removes matching pencil marks from Regions with target cell when setting number', (): void => {
+        const sudoku = new Sudoku();
+
+        sudoku.addPencilMark({ number: 2, row: 3, column: 3 });
+        sudoku.addPencilMark({ number: 4, row: 3, column: 3 });
+        sudoku.addPencilMark({ number: 9, row: 3, column: 3 });
+        sudoku.addPencilMark({ number: 2, row: 4, column: 8 });
+        sudoku.addPencilMark({ number: 2, row: 8, column: 4 });
+
+        // Add number to central cell, so row 4, column 4, box 4 (0-indexed)
+        sudoku.addNumber({ newNumber: 2, row: 4, column: 4 });
+
+        expect(sudoku.grid[3][3].pencilMarks.size).toBe(2);
+        expect(sudoku.grid[3][3].pencilMarks.has(2)).toBe(false);
+        expect(sudoku.grid[4][8].pencilMarks.has(2)).toBe(false);
+        expect(sudoku.grid[8][4].pencilMarks.has(2)).toBe(false);
+
+        // change central cell number to 9
+        sudoku.addNumber({ newNumber: 9, row: 4, column: 4 });
+        expect(sudoku.grid[3][3].pencilMarks.size).toBe(1);
+        expect(sudoku.grid[3][3].pencilMarks.has(9)).toBe(false);
+    });
+});

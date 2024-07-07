@@ -36,6 +36,10 @@ export default class Sudoku {
 
         if (canPlaceNumber) {
             targetCell.value = newNumber;
+            this.#removeMatchingPencilMarksInTargetRegions(
+                targetCell,
+                newNumber
+            );
         } else {
             throw new PlacementError(placementErrorDetails);
         }
@@ -123,6 +127,25 @@ export default class Sudoku {
         }
 
         return [canPlaceNumber, placementErrorDetails];
+    }
+
+    #removeMatchingPencilMarksInTargetRegions(
+        targetCell: Cell,
+        number: SudokuNumber
+    ): void {
+        const regionWithTargetCell = (region: Region): boolean =>
+            region.cells.includes(targetCell);
+        const regionsWithTargetCell = [
+            this.rows.find(regionWithTargetCell),
+            this.columns.find(regionWithTargetCell),
+            this.boxes.find(regionWithTargetCell),
+        ] as Region[];
+
+        for (const region of regionsWithTargetCell) {
+            for (const cell of region.cells) {
+                cell.removePencilMark(number);
+            }
+        }
     }
 
     #createGrid(): Cell[][] {
