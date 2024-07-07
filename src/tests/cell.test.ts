@@ -15,44 +15,56 @@ describe('Cell instantiation', (): void => {
     });
 });
 
-describe('addPencilMark', (): void => {
-    it('Adds 1-9 to .pencilMarks if not already in set', (): void => {
-        const cell = new Cell();
-        for (let i = 1; i <= 9; i++) {
-            const num = i as SudokuNumber;
-            cell.addPencilMark(num);
-            expect(cell.pencilMarks.has(num)).toBe(true);
-        }
+describe('pencil marks', (): void => {
+    describe('addPencilMark', (): void => {
+        it('adds 1-9 to .pencilMarks if not already in set', (): void => {
+            const cell = new Cell();
+            for (let i = 1; i <= 9; i++) {
+                const num = i as SudokuNumber;
+                cell.addPencilMark(num);
+                expect(cell.pencilMarks.has(num)).toBe(true);
+            }
+        });
+
+        it('does not add number to .pencilMarks if already in set', (): void => {
+            const cell = new Cell();
+            cell.addPencilMark(5);
+            cell.addPencilMark(5);
+            expect(cell.pencilMarks.size).toBe(1);
+        });
+
+        it('does not add number to .pencilMarks if .value is not null', (): void => {
+            const cell = new Cell();
+            cell.value = 2;
+            cell.addPencilMark(5);
+            expect(cell.pencilMarks.size).toBe(0);
+        });
     });
 
-    it('Does not add number to .pencilMarks if already in set', (): void => {
-        const cell = new Cell();
-        cell.addPencilMark(5);
-        cell.addPencilMark(5);
-        expect(cell.pencilMarks.size).toBe(1);
+    describe('removePencilMark', (): void => {
+        it('deletes an existing pencil mark', (): void => {
+            const cell = new Cell();
+            cell.addPencilMark(5);
+            cell.removePencilMark(5);
+            expect(cell.pencilMarks.size).toBe(0);
+        });
+
+        it('does nothing if trying to delete a non-existant pencil mark', (): void => {
+            const cell = new Cell();
+            cell.addPencilMark(5);
+            cell.removePencilMark(6);
+            expect(cell.pencilMarks.has(5)).toBe(true);
+            expect(cell.pencilMarks.size).toBe(1);
+        });
     });
 
-    it('Does not add number to .pencilMarks if already in set', (): void => {
-        const cell = new Cell();
-        cell.addPencilMark(5);
-        cell.addPencilMark(5);
-        expect(cell.pencilMarks.size).toBe(1);
-    });
-});
-
-describe('removePencilMark', (): void => {
-    it('Deletes an existing pencil mark', (): void => {
-        const cell = new Cell();
-        cell.addPencilMark(5);
-        cell.removePencilMark(5);
-        expect(cell.pencilMarks.size).toBe(0);
-    });
-
-    it('Does nothing if trying to delete a non-existant pencil mark', (): void => {
-        const cell = new Cell();
-        cell.addPencilMark(5);
-        cell.removePencilMark(6);
-        expect(cell.pencilMarks.has(5)).toBe(true);
-        expect(cell.pencilMarks.size).toBe(1);
+    describe('on .value change', (): void => {
+        it('clears pencil marks when .value changed', (): void => {
+            const cell = new Cell();
+            cell.addPencilMark(5);
+            cell.addPencilMark(9);
+            cell.value = 6;
+            expect(cell.pencilMarks.size).toBe(0);
+        });
     });
 });
