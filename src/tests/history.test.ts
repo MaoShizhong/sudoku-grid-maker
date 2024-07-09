@@ -1,5 +1,4 @@
 import Sudoku from '../sudoku';
-import { showsSameCellStates } from './test-util';
 
 describe('History', (): void => {
     describe('Grid state history array', (): void => {
@@ -20,6 +19,8 @@ describe('History', (): void => {
         });
 
         it('currentState returns grid state pointed to by current history index', (): void => {
+            const emptyGrid = new Sudoku().grid;
+
             const sudoku = new Sudoku();
             const firstGridStateInHistory = sudoku.history.currentGridState;
             expect(sudoku.grid).toEqual(firstGridStateInHistory.grid);
@@ -29,6 +30,7 @@ describe('History', (): void => {
 
             sudoku.addNumber({ newNumber: 1, row: 1, column: 1 });
             const secondGridStateInHistory = sudoku.history.currentGridState;
+            expect(sudoku.grid).not.toEqual(emptyGrid);
             expect(sudoku.grid).toEqual(secondGridStateInHistory.grid);
             expect(sudoku.rows).toEqual(secondGridStateInHistory.rows);
             expect(sudoku.columns).toEqual(secondGridStateInHistory.columns);
@@ -60,35 +62,96 @@ describe('History', (): void => {
             sudoku.addNumber({ newNumber: 1, row: 1, column: 1 });
             sudoku.undo();
 
-            expect(showsSameCellStates(sudoku.grid, emptyGrid)).toBe(true);
-            expect(
-                showsSameCellStates(
-                    sudoku.grid,
-                    sudoku.history.currentGridState.grid
-                )
-            ).toBe(true);
-            expect(
-                showsSameCellStates(
-                    sudoku.rows,
-                    sudoku.history.currentGridState.rows
-                )
-            ).toBe(true);
-            expect(
-                showsSameCellStates(
-                    sudoku.columns,
-                    sudoku.history.currentGridState.columns
-                )
-            ).toBe(true);
-            expect(
-                showsSameCellStates(
-                    sudoku.boxes,
-                    sudoku.history.currentGridState.boxes
-                )
-            ).toBe(true);
+            expect(sudoku.grid).toEqual(emptyGrid);
+            expect(sudoku.grid).toEqual(sudoku.history.currentGridState.grid);
+            expect(sudoku.rows).toEqual(sudoku.history.currentGridState.rows);
+            expect(sudoku.columns).toEqual(
+                sudoku.history.currentGridState.columns
+            );
+            expect(sudoku.boxes).toEqual(sudoku.history.currentGridState.boxes);
+        });
+
+        it('maintains the first grid state if already at first', (): void => {
+            const sudoku = new Sudoku();
+            const emptyGrid = new Sudoku().grid;
+
+            sudoku.undo();
+            expect(sudoku.grid).toEqual(emptyGrid);
+
+            sudoku.undo();
+            expect(sudoku.grid).toEqual(emptyGrid);
+        });
+
+        it('does not change grid state count when undoing', (): void => {
+            const sudoku = new Sudoku();
+
+            sudoku.addNumber({ newNumber: 1, row: 1, column: 1 });
+            expect(sudoku.history.gridStatesCount).toBe(2);
+
+            sudoku.undo();
+            expect(sudoku.history.gridStatesCount).toBe(2);
+
+            sudoku.undo();
+            expect(sudoku.history.gridStatesCount).toBe(2);
         });
     });
 
     describe('redo', (): void => {
-        it.skip('sets active grid state to next in history if available', (): void => {});
+        it('sets active grid state to next in history if available', (): void => {
+            const sudoku = new Sudoku();
+            const emptyGrid = new Sudoku().grid;
+
+            sudoku.addNumber({ newNumber: 9, row: 3, column: 5 });
+            const secondGridState = structuredClone(sudoku.grid);
+
+            sudoku.undo();
+            sudoku.redo();
+            expect(sudoku.grid).not.toEqual(emptyGrid);
+            expect(secondGridState).not.toEqual(emptyGrid);
+            expect(sudoku.grid).toEqual(secondGridState);
+        });
+
+        it('maintains the latest grid state if already at latest', (): void => {
+            const sudoku = new Sudoku();
+            const emptyGrid = new Sudoku().grid;
+
+            sudoku.addNumber({ newNumber: 9, row: 3, column: 5 });
+            const secondGridState = structuredClone(sudoku.grid);
+
+            sudoku.redo();
+            expect(sudoku.grid).not.toEqual(emptyGrid);
+            expect(sudoku.grid).toEqual(secondGridState);
+        });
+
+        it('does not change grid state count when redoing', (): void => {
+            const sudoku = new Sudoku();
+
+            sudoku.addNumber({ newNumber: 1, row: 1, column: 1 });
+            expect(sudoku.history.gridStatesCount).toBe(2);
+
+            sudoku.undo();
+            sudoku.redo();
+            expect(sudoku.history.gridStatesCount).toBe(2);
+        });
+    });
+
+    describe('Recording new grid states after undoing', (): void => {
+        it('removes all proceeding grid states in history if recording new grid state after undoing', (): void => {
+            const emptyGrid = new Sudoku().grid;
+            const sudoku = new Sudoku();
+            sudoku.addNumber({ newNumber: 5, row: 0, column: 0 });
+            const gridStateAfterFirstNumberAdded = structuredClone(
+                sudoku.history.currentGridState
+            );
+            sudoku.undo();
+            sudoku.addPencilMark({ number: 8, row: 1, column: 1 });
+
+            expect(sudoku.history.gridStatesCount).toBe(2);
+            expect(sudoku.grid).not.toEqual(emptyGrid);
+            expect(sudoku.grid).not.toEqual(
+                gridStateAfterFirstNumberAdded.grid
+            );
+            expect(sudoku.grid).toEqual(sudoku.history.currentGridState.grid);
+        });
     });
 });
