@@ -13,7 +13,7 @@
         "./dist/*"
     ],
     "engines": {
-        "node": ">=16.14.0"
+        "node": ">=17"
     },
     "keywords": [
         "sudoku",
