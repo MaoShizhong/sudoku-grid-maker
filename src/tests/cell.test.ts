@@ -11,7 +11,7 @@ describe('Cell instantiation', (): void => {
     });
 
     it('initialises .pencilMarks as empty set', (): void => {
-        expect(new Cell().pencilMarks).toEqual(new Set());
+        expect(new Cell().pencilMarks).toEqual([]);
     });
 });
 
@@ -22,7 +22,7 @@ describe('pencil marks', (): void => {
             for (let i = 1; i <= 9; i++) {
                 const num = i as SudokuNumber;
                 cell.addPencilMark(num);
-                expect(cell.pencilMarks.has(num)).toBe(true);
+                expect(cell.pencilMarks.includes(num)).toBe(true);
             }
         });
 
@@ -30,14 +30,14 @@ describe('pencil marks', (): void => {
             const cell = new Cell();
             cell.addPencilMark(5);
             cell.addPencilMark(5);
-            expect(cell.pencilMarks.size).toBe(1);
+            expect(cell.pencilMarks.length).toBe(1);
         });
 
         it('does not add number to .pencilMarks if .value is not null', (): void => {
             const cell = new Cell();
             cell.value = 2;
             cell.addPencilMark(5);
-            expect(cell.pencilMarks.size).toBe(0);
+            expect(cell.pencilMarks.length).toBe(0);
         });
     });
 
@@ -46,15 +46,15 @@ describe('pencil marks', (): void => {
             const cell = new Cell();
             cell.addPencilMark(5);
             cell.removePencilMark(5);
-            expect(cell.pencilMarks.size).toBe(0);
+            expect(cell.pencilMarks.length).toBe(0);
         });
 
         it('does nothing if trying to delete a non-existant pencil mark', (): void => {
             const cell = new Cell();
             cell.addPencilMark(5);
             cell.removePencilMark(6);
-            expect(cell.pencilMarks.has(5)).toBe(true);
-            expect(cell.pencilMarks.size).toBe(1);
+            expect(cell.pencilMarks.includes(5)).toBe(true);
+            expect(cell.pencilMarks.length).toBe(1);
         });
     });
 });

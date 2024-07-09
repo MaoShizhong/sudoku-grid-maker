@@ -46,7 +46,7 @@ export default class Sudoku implements SudokuPuzzle {
 
         if (canPlaceNumber) {
             targetCell.value = newNumber;
-            targetCell.pencilMarks.clear();
+            targetCell.clearPencilMarks();
             this.#removeMatchingPencilMarksInTargetRegions(
                 targetCell,
                 newNumber

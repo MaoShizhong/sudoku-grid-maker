@@ -164,7 +164,7 @@ describe('Methods', (): void => {
             sudoku.addPencilMark({ number: 8, row: 0, column: 0 });
             sudoku.addNumber({ newNumber: 8, row: 0, column: 0 });
 
-            expect(sudoku.grid[0][0].pencilMarks.size).toBe(0);
+            expect(sudoku.grid[0][0].pencilMarks.length).toBe(0);
         });
 
         it('throws if row already contains number', (): void => {
@@ -241,7 +241,7 @@ describe('Methods', (): void => {
             sudoku.addPencilMark({ number: 5, row: 234, column: 10 });
             const gridCells = sudoku.grid.flat();
             const hasPencilMarksAdded = gridCells.some(
-                (cell): boolean => cell.pencilMarks.size > 0
+                (cell): boolean => cell.pencilMarks.length > 0
             );
 
             expect(hasPencilMarksAdded).toBe(false);
@@ -251,24 +251,24 @@ describe('Methods', (): void => {
             const sudoku = new Sudoku();
 
             sudoku.addPencilMark({ number: 2, row: 4, column: 6 });
-            expect(sudoku.grid[4][6].pencilMarks.size).toBe(1);
-            expect(sudoku.grid[4][6].pencilMarks.has(2)).toBe(true);
+            expect(sudoku.grid[4][6].pencilMarks.length).toBe(1);
+            expect(sudoku.grid[4][6].pencilMarks.includes(2)).toBe(true);
 
             sudoku.addPencilMark({ number: 5, row: 1, column: 1 });
-            expect(sudoku.grid[1][1].pencilMarks.size).toBe(1);
-            expect(sudoku.grid[1][1].pencilMarks.has(5)).toBe(true);
+            expect(sudoku.grid[1][1].pencilMarks.length).toBe(1);
+            expect(sudoku.grid[1][1].pencilMarks.includes(5)).toBe(true);
         });
 
         it('adds a pencil mark to a cell with existing pencil marks', (): void => {
             const sudoku = new Sudoku();
 
             sudoku.addPencilMark({ number: 5, row: 1, column: 1 });
-            expect(sudoku.grid[1][1].pencilMarks.size).toBe(1);
-            expect(sudoku.grid[1][1].pencilMarks.has(5)).toBe(true);
+            expect(sudoku.grid[1][1].pencilMarks.length).toBe(1);
+            expect(sudoku.grid[1][1].pencilMarks.includes(5)).toBe(true);
 
             sudoku.addPencilMark({ number: 8, row: 1, column: 1 });
-            expect(sudoku.grid[1][1].pencilMarks.size).toBe(2);
-            expect(sudoku.grid[1][1].pencilMarks.has(8)).toBe(true);
+            expect(sudoku.grid[1][1].pencilMarks.length).toBe(2);
+            expect(sudoku.grid[1][1].pencilMarks.includes(8)).toBe(true);
         });
     });
 
@@ -279,7 +279,7 @@ describe('Methods', (): void => {
             sudoku.removePencilMark({ number: 5, row: 234, column: 10 });
             const gridCells = sudoku.grid.flat();
             const hasPencilMarksAdded = gridCells.some(
-                (cell): boolean => cell.pencilMarks.size > 0
+                (cell): boolean => cell.pencilMarks.length > 0
             );
 
             expect(hasPencilMarksAdded).toBe(false);
@@ -289,7 +289,7 @@ describe('Methods', (): void => {
             const sudoku = new Sudoku();
 
             sudoku.removePencilMark({ number: 5, row: 0, column: 0 });
-            expect(sudoku.grid[0][0].pencilMarks.size).toBe(0);
+            expect(sudoku.grid[0][0].pencilMarks.length).toBe(0);
         });
 
         it('removes a pencil mark from a cell', (): void => {
@@ -297,13 +297,13 @@ describe('Methods', (): void => {
 
             sudoku.addPencilMark({ number: 2, row: 4, column: 6 });
             sudoku.removePencilMark({ number: 2, row: 4, column: 6 });
-            expect(sudoku.grid[4][6].pencilMarks.size).toBe(0);
+            expect(sudoku.grid[4][6].pencilMarks.length).toBe(0);
 
             sudoku.addPencilMark({ number: 5, row: 1, column: 1 });
             sudoku.addPencilMark({ number: 8, row: 1, column: 1 });
             sudoku.removePencilMark({ number: 5, row: 1, column: 1 });
-            expect(sudoku.grid[1][1].pencilMarks.size).toBe(1);
-            expect(sudoku.grid[1][1].pencilMarks.has(8)).toBe(true);
+            expect(sudoku.grid[1][1].pencilMarks.length).toBe(1);
+            expect(sudoku.grid[1][1].pencilMarks.includes(8)).toBe(true);
         });
     });
 });
@@ -321,14 +321,14 @@ describe('Number/pencil mark interactions', (): void => {
         // Add number to central cell, so row 4, column 4, box 4 (0-indexed)
         sudoku.addNumber({ newNumber: 2, row: 4, column: 4 });
 
-        expect(sudoku.grid[3][3].pencilMarks.size).toBe(2);
-        expect(sudoku.grid[3][3].pencilMarks.has(2)).toBe(false);
-        expect(sudoku.grid[4][8].pencilMarks.has(2)).toBe(false);
-        expect(sudoku.grid[8][4].pencilMarks.has(2)).toBe(false);
+        expect(sudoku.grid[3][3].pencilMarks.length).toBe(2);
+        expect(sudoku.grid[3][3].pencilMarks.includes(2)).toBe(false);
+        expect(sudoku.grid[4][8].pencilMarks.includes(2)).toBe(false);
+        expect(sudoku.grid[8][4].pencilMarks.includes(2)).toBe(false);
 
         // change central cell number to 9
         sudoku.addNumber({ newNumber: 9, row: 4, column: 4 });
-        expect(sudoku.grid[3][3].pencilMarks.size).toBe(1);
-        expect(sudoku.grid[3][3].pencilMarks.has(9)).toBe(false);
+        expect(sudoku.grid[3][3].pencilMarks.length).toBe(1);
+        expect(sudoku.grid[3][3].pencilMarks.includes(9)).toBe(false);
     });
 });
