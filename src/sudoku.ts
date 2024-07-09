@@ -1,20 +1,30 @@
 import { Cell } from './cell';
 import { PlacementError } from './error';
+import { PuzzleHistory } from './puzzle-history';
 import { Region } from './region';
-import { PlacementErrorDetails, SudokuNumber } from './types';
+import { PlacementErrorDetails, SudokuNumber, SudokuPuzzle } from './types';
 
-export default class Sudoku {
+export default class Sudoku implements SudokuPuzzle {
     static #BOARD_RESOLUTION = 9;
     grid: Cell[][];
     rows: Region[];
     columns: Region[];
     boxes: Region[];
+    history: PuzzleHistory;
+    gridState: SudokuPuzzle;
 
     constructor() {
         this.grid = this.#createGrid();
         this.rows = this.#createRows();
         this.columns = this.#createColumns();
         this.boxes = this.#createBoxes();
+        this.gridState = {
+            grid: this.grid,
+            rows: this.rows,
+            columns: this.columns,
+            boxes: this.boxes,
+        };
+        this.history = new PuzzleHistory(this.gridState);
     }
 
     addNumber({
@@ -36,10 +46,12 @@ export default class Sudoku {
 
         if (canPlaceNumber) {
             targetCell.value = newNumber;
+            targetCell.pencilMarks.clear();
             this.#removeMatchingPencilMarksInTargetRegions(
                 targetCell,
                 newNumber
             );
+            this.history.recordNewGridState(this.gridState);
         } else {
             throw new PlacementError(placementErrorDetails);
         }
@@ -49,6 +61,7 @@ export default class Sudoku {
         const targetCell = this.grid[row]?.[column];
         if (targetCell) {
             targetCell.value = null;
+            this.history.recordNewGridState(this.gridState);
         }
     }
 
@@ -64,6 +77,7 @@ export default class Sudoku {
         const targetCell = this.grid[row]?.[column];
         if (targetCell) {
             targetCell.addPencilMark(number);
+            this.history.recordNewGridState(this.gridState);
         }
     }
 
@@ -79,6 +93,7 @@ export default class Sudoku {
         const targetCell = this.grid[row]?.[column];
         if (targetCell) {
             targetCell.removePencilMark(number);
+            this.history.recordNewGridState(this.gridState);
         }
     }
 

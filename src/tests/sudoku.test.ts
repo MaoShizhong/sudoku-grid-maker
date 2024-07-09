@@ -157,6 +157,16 @@ describe('Methods', (): void => {
             expect(sudoku.grid[0][0].value).toBe(5);
         });
 
+        it('clears target cell pencil marks when changing its value', (): void => {
+            const sudoku = new Sudoku();
+            sudoku.addPencilMark({ number: 5, row: 0, column: 0 });
+            sudoku.addPencilMark({ number: 6, row: 0, column: 0 });
+            sudoku.addPencilMark({ number: 8, row: 0, column: 0 });
+            sudoku.addNumber({ newNumber: 8, row: 0, column: 0 });
+
+            expect(sudoku.grid[0][0].pencilMarks.size).toBe(0);
+        });
+
         it('throws if row already contains number', (): void => {
             expect.assertions(1);
             const sudoku = new Sudoku();

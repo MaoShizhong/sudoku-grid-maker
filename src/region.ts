@@ -6,7 +6,7 @@ export class Region {
     static DUPLICATE_NUMBERS_ERROR =
         'Regions cannot contain multiple cells with the same non-null values';
     static #CELL_COUNT = 9;
-    #cells: Cell[];
+    cells: Cell[];
 
     constructor(...cells: Cell[]) {
         if (cells.length !== Region.#CELL_COUNT) {
@@ -16,15 +16,11 @@ export class Region {
             throw new RangeError(Region.DUPLICATE_NUMBERS_ERROR);
         }
 
-        this.#cells = cells;
-    }
-
-    get cells(): Cell[] {
-        return this.#cells;
+        this.cells = cells;
     }
 
     canPlaceNumber(number: SudokuNumber): boolean {
-        return !this.#cells.some((cell): boolean => cell.value === number);
+        return !this.cells.some((cell): boolean => cell.value === number);
     }
 
     static #containsDuplicateCellNumbers(cells: Cell[]): boolean {

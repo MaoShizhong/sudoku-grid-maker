@@ -57,14 +57,4 @@ describe('pencil marks', (): void => {
             expect(cell.pencilMarks.size).toBe(1);
         });
     });
-
-    describe('on .value change', (): void => {
-        it('clears pencil marks when .value changed', (): void => {
-            const cell = new Cell();
-            cell.addPencilMark(5);
-            cell.addPencilMark(9);
-            cell.value = 6;
-            expect(cell.pencilMarks.size).toBe(0);
-        });
-    });
 });
