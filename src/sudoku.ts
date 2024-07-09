@@ -1,30 +1,24 @@
 import { Cell } from './cell';
 import { PlacementError } from './error';
 import { PuzzleHistory } from './puzzle-history';
-import { Region } from './region';
-import { PlacementErrorDetails, SudokuNumber, SudokuPuzzle } from './types';
+import {
+    Box,
+    Coordinate,
+    PlacementErrorDetails,
+    SudokuNumber,
+    SudokuPuzzle,
+} from './types';
 
-export default class Sudoku implements SudokuPuzzle {
+export default class Sudoku {
     static #BOARD_RESOLUTION = 9;
-    grid: Cell[][];
-    rows: Region[];
-    columns: Region[];
-    boxes: Region[];
+    static #boxesCoordinates = Sudoku.#generateBoxesCoordinates();
+
+    grid: SudokuPuzzle;
     history: PuzzleHistory;
-    gridState: SudokuPuzzle;
 
     constructor() {
         this.grid = this.#createGrid();
-        this.rows = this.#createRows();
-        this.columns = this.#createColumns();
-        this.boxes = this.#createBoxes();
-        this.gridState = {
-            grid: this.grid,
-            rows: this.rows,
-            columns: this.columns,
-            boxes: this.boxes,
-        };
-        this.history = new PuzzleHistory(this.gridState);
+        this.history = new PuzzleHistory(this.grid);
     }
 
     addNumber({
@@ -47,11 +41,8 @@ export default class Sudoku implements SudokuPuzzle {
         if (canPlaceNumber) {
             targetCell.value = newNumber;
             targetCell.clearPencilMarks();
-            this.#removeMatchingPencilMarksInTargetRegions(
-                targetCell,
-                newNumber
-            );
-            this.history.recordNewGridState(this.gridState);
+            this.#removeMatchingPencilMarksInMatchingRegions(targetCell);
+            this.history.recordNewGridState(this.grid);
         } else {
             throw new PlacementError(placementErrorDetails);
         }
@@ -61,7 +52,7 @@ export default class Sudoku implements SudokuPuzzle {
         const targetCell = this.grid[row]?.[column];
         if (targetCell) {
             targetCell.value = null;
-            this.history.recordNewGridState(this.gridState);
+            this.history.recordNewGridState(this.grid);
         }
     }
 
@@ -77,7 +68,7 @@ export default class Sudoku implements SudokuPuzzle {
         const targetCell = this.grid[row]?.[column];
         if (targetCell) {
             targetCell.addPencilMark(number);
-            this.history.recordNewGridState(this.gridState);
+            this.history.recordNewGridState(this.grid);
         }
     }
 
@@ -93,141 +84,165 @@ export default class Sudoku implements SudokuPuzzle {
         const targetCell = this.grid[row]?.[column];
         if (targetCell) {
             targetCell.removePencilMark(number);
-            this.history.recordNewGridState(this.gridState);
+            this.history.recordNewGridState(this.grid);
         }
+    }
+
+    undo(): void {
+        this.grid = this.history.toPreviousGridState();
+    }
+
+    redo(): void {
+        this.grid = this.history.toNextGridState();
     }
 
     #checkPlacementValidity(
         targetCell: Cell,
         number: SudokuNumber
     ): [boolean, PlacementErrorDetails] {
+        let canPlaceNumber = true;
         const placementErrorDetails = {
             isAlreadyInRow: false,
             isAlreadyInColumn: false,
             isAlreadyInBox: false,
         };
 
-        const isTargetCell = (cell: Cell): boolean => cell === targetCell;
-        let canPlaceNumber = true;
+        for (let row = 0; row < this.grid.length; row++) {
+            for (let column = 0; column < this.grid[row].length; column++) {
+                const currentCell = this.grid[row][column];
+                if (currentCell.value !== number) {
+                    continue;
+                }
 
-        for (let i = 0; i < Sudoku.#BOARD_RESOLUTION; i++) {
-            const cellInRow = this.rows[i].cells.find(isTargetCell);
-            const cellInColumn = this.columns[i].cells.find(isTargetCell);
-            const cellInBox = this.boxes[i].cells.find(isTargetCell);
+                const isNumberAlreadyInRow = currentCell.row === targetCell.row;
+                const isNumberAlreadyInColumn =
+                    currentCell.column === targetCell.column;
+                const isNumberAlreadyInBox = this.#isInSameBox(
+                    currentCell,
+                    targetCell
+                );
 
-            if (!cellInRow && !cellInColumn && !cellInBox) {
-                continue;
-            }
-
-            const canPlaceInRow = this.rows[i].canPlaceNumber(number);
-            const canPlaceInColumn = this.columns[i].canPlaceNumber(number);
-            const canPlaceInBox = this.boxes[i].canPlaceNumber(number);
-
-            if (cellInRow && !canPlaceInRow) {
-                placementErrorDetails.isAlreadyInRow = true;
-            }
-            if (cellInColumn && !canPlaceInColumn) {
-                placementErrorDetails.isAlreadyInColumn = true;
-            }
-            if (cellInBox && !canPlaceInBox) {
-                placementErrorDetails.isAlreadyInBox = true;
-            }
-
-            canPlaceNumber = Object.values(placementErrorDetails).every(
-                (value): boolean => value === false
-            );
-            if (!canPlaceNumber) {
-                break;
+                if (isNumberAlreadyInRow) {
+                    canPlaceNumber = false;
+                    placementErrorDetails.isAlreadyInRow = true;
+                }
+                if (isNumberAlreadyInColumn) {
+                    canPlaceNumber = false;
+                    placementErrorDetails.isAlreadyInColumn = true;
+                }
+                if (isNumberAlreadyInBox) {
+                    canPlaceNumber = false;
+                    placementErrorDetails.isAlreadyInBox = true;
+                }
             }
         }
 
         return [canPlaceNumber, placementErrorDetails];
     }
 
-    #removeMatchingPencilMarksInTargetRegions(
-        targetCell: Cell,
-        number: SudokuNumber
-    ): void {
-        const regionWithTargetCell = (region: Region): boolean =>
-            region.cells.includes(targetCell);
-        const regionsWithTargetCell = [
-            this.rows.find(regionWithTargetCell),
-            this.columns.find(regionWithTargetCell),
-            this.boxes.find(regionWithTargetCell),
-        ] as Region[];
+    #isInSameBox(cellA: Cell, cellB: Cell): boolean {
+        const cellABox = Sudoku.#getBoxNumber(cellA.row, cellA.column);
+        const cellBBox = Sudoku.#getBoxNumber(cellB.row, cellB.column);
 
-        for (const region of regionsWithTargetCell) {
-            for (const cell of region.cells) {
-                cell.removePencilMark(number);
-            }
+        return cellABox === cellBBox;
+    }
+
+    #getCellsInBox(boxNumber: number): Cell[] {
+        const boxCoordinates = Sudoku.#boxesCoordinates[boxNumber];
+        const cellsInBox: Cell[] = [];
+
+        for (const { row, column } of boxCoordinates) {
+            cellsInBox.push(this.grid[row][column]);
+        }
+        return cellsInBox;
+    }
+
+    #getCellsInColumn(column: number): Cell[] {
+        const cellsInColumn: Cell[] = [];
+
+        for (const row of this.grid) {
+            cellsInColumn.push(row[column]);
+        }
+        return cellsInColumn;
+    }
+
+    #removeMatchingPencilMarksInMatchingRegions({
+        value,
+        row,
+        column,
+    }: Cell): void {
+        if (value === null) {
+            return;
+        }
+
+        const boxNumber = Sudoku.#getBoxNumber(row, column);
+        const cellsInColumn = this.#getCellsInColumn(column);
+        const cellsInBox = this.#getCellsInBox(boxNumber);
+        const matchingRegionCells = [
+            ...this.grid[row],
+            ...cellsInColumn,
+            ...cellsInBox,
+        ];
+
+        for (const cell of matchingRegionCells) {
+            cell.removePencilMark(value);
         }
     }
 
-    #createGrid(): Cell[][] {
-        const grid: Cell[][] = [];
+    #createGrid(): SudokuPuzzle {
+        const grid: SudokuPuzzle = [];
         for (let i = 0; i < Sudoku.#BOARD_RESOLUTION; i++) {
             const row: Cell[] = [];
             for (let j = 0; j < Sudoku.#BOARD_RESOLUTION; j++) {
-                row.push(new Cell());
+                row.push(new Cell({ row: i, column: j }));
             }
             grid.push(row);
         }
         return grid;
     }
 
-    #createRows(): Region[] {
-        const rows: Region[] = [];
-        for (let i = 0; i < Sudoku.#BOARD_RESOLUTION; i++) {
-            rows.push(new Region(...this.grid[i]));
-        }
-        return rows;
-    }
-
-    #createColumns(): Region[] {
-        const columns: Region[] = [];
-        for (let i = 0; i < Sudoku.#BOARD_RESOLUTION; i++) {
-            columns.push(
-                new Region(
-                    this.grid[0][i],
-                    this.grid[1][i],
-                    this.grid[2][i],
-                    this.grid[3][i],
-                    this.grid[4][i],
-                    this.grid[5][i],
-                    this.grid[6][i],
-                    this.grid[7][i],
-                    this.grid[8][i]
-                )
-            );
-        }
-        return columns;
-    }
-
-    #createBoxes(): Region[] {
+    static #generateBoxesCoordinates(): Box[] {
+        const boxes: Box[] = [];
         const firstBoxCellCoordinates = [
-            [0, 0],
-            [0, 1],
-            [0, 2],
-            [1, 0],
-            [1, 1],
-            [1, 2],
-            [2, 0],
-            [2, 1],
-            [2, 2],
+            { row: 0, column: 0 },
+            { row: 0, column: 1 },
+            { row: 0, column: 2 },
+            { row: 1, column: 0 },
+            { row: 1, column: 1 },
+            { row: 1, column: 2 },
+            { row: 2, column: 0 },
+            { row: 2, column: 1 },
+            { row: 2, column: 2 },
         ];
 
-        const boxes: Region[] = [];
         for (let box = 0; box < Sudoku.#BOARD_RESOLUTION; box++) {
-            const boxCells = firstBoxCellCoordinates.map(([y, x]): Cell => {
-                const boxRow = box < 3 ? 0 : box < 6 ? 1 : 2;
-                const boxColumn = box % 3;
-                const newY = y + boxRow * 3;
-                const newX = x + boxColumn * 3;
-                return this.grid[newY][newX];
-            });
+            const boxCells = firstBoxCellCoordinates.map(
+                ({ row, column }): Coordinate => {
+                    const boxRow = box < 3 ? 0 : box < 6 ? 1 : 2;
+                    const boxColumn = box % 3;
+                    const newRow = row + boxRow * 3;
+                    const newColumn = column + boxColumn * 3;
+                    return { row: newRow, column: newColumn };
+                }
+            );
 
-            boxes.push(new Region(...boxCells));
+            boxes.push(boxCells);
         }
         return boxes;
+    }
+
+    static #getBoxNumber(cellRow: number, cellColumn: number): number {
+        for (let box = 0; box < Sudoku.#BOARD_RESOLUTION; box++) {
+            for (const { row, column } of Sudoku.#boxesCoordinates[box]) {
+                if (cellRow === row && cellColumn === column) {
+                    return box;
+                }
+            }
+        }
+
+        // should not be reachable
+        throw new Error(
+            `Cell marked as row ${cellRow} and column ${cellColumn} which is out of bounds`
+        );
     }
 }

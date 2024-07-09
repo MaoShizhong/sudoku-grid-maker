@@ -1,12 +1,16 @@
-import { CellValue, SudokuNumber } from './types';
+import { CellProps, CellValue, SudokuNumber } from './types';
 
-export class Cell {
+export class Cell implements CellProps {
     value: CellValue;
+    row: number;
+    column: number;
     pencilMarks: SudokuNumber[];
 
-    constructor(value: CellValue = null) {
+    constructor({ value = null, row, column, pencilMarks = [] }: CellProps) {
         this.value = value;
-        this.pencilMarks = [];
+        this.row = row;
+        this.column = column;
+        this.pencilMarks = pencilMarks;
     }
 
     addPencilMark(number: SudokuNumber): void {
