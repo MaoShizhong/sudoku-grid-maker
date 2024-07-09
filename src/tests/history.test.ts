@@ -119,7 +119,7 @@ describe('History', (): void => {
     });
 
     describe('Recording new grid states after undoing', (): void => {
-        it.skip('removes all proceeding grid states in history if recording new grid state after undoing', (): void => {
+        it('removes all proceeding grid states in history if recording new grid state after undoing', (): void => {
             const emptyGrid = new Sudoku().grid;
             const sudoku = new Sudoku();
             sudoku.addNumber({ newNumber: 5, row: 0, column: 0 });
@@ -133,6 +133,17 @@ describe('History', (): void => {
             expect(sudoku.grid).not.toEqual(emptyGrid);
             expect(sudoku.grid).not.toEqual(gridStateAfterFirstNumberAdded);
             expect(sudoku.grid).toEqual(sudoku.history.currentGridState);
+
+            sudoku.addNumber({ newNumber: 3, row: 5, column: 5 });
+            sudoku.removePencilMark({ number: 8, row: 1, column: 1 });
+            expect(sudoku.history.gridStatesCount).toBe(4);
+
+            sudoku.undo();
+            sudoku.undo();
+
+            sudoku.removePencilMark({ number: 8, row: 1, column: 1 });
+            expect(sudoku.history.gridStatesCount).toBe(3);
+            expect(sudoku.grid).toEqual(emptyGrid);
         });
     });
 });
