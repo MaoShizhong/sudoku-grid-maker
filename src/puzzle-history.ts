@@ -1,13 +1,20 @@
 import { Cell } from './cell';
-import { SudokuPuzzle } from './types';
+import { CellProps, SudokuPuzzle } from './types';
 
 export class PuzzleHistory {
     #currentGridStateIndex = 0;
-    #gridStates: SudokuPuzzle[];
+    #gridStates: string[];
+
+    static #toCellGrid(gridState: string): Cell[][] {
+        const pojoGrid: CellProps[][] = JSON.parse(gridState);
+        const cellGrid = pojoGrid.map((row): Cell[] => {
+            return row.map((obj) => new Cell(obj));
+        });
+        return cellGrid;
+    }
 
     constructor(startingGridState: SudokuPuzzle) {
-        const startingGridStateCopy =
-            PuzzleHistory.#deepClone(startingGridState);
+        const startingGridStateCopy = JSON.stringify(startingGridState);
         this.#gridStates = [startingGridStateCopy];
     }
 
@@ -16,7 +23,7 @@ export class PuzzleHistory {
     }
 
     get currentGridState(): SudokuPuzzle {
-        return PuzzleHistory.#deepClone(
+        return PuzzleHistory.#toCellGrid(
             this.#gridStates[this.#currentGridStateIndex]
         );
     }
@@ -41,20 +48,12 @@ export class PuzzleHistory {
     }
 
     recordNewGridState(gridState: SudokuPuzzle): void {
-        const gridStateCopy = PuzzleHistory.#deepClone(gridState);
+        const gridStateCopy = JSON.stringify(gridState);
         this.#currentGridStateIndex++;
         this.#gridStates.splice(
             this.#currentGridStateIndex,
             Infinity,
             gridStateCopy
         );
-    }
-
-    static #deepClone(grid: SudokuPuzzle): SudokuPuzzle {
-        const clonedGridWithPojos = structuredClone(grid);
-        const clonedGridWithCells = clonedGridWithPojos.map((row): Cell[] => {
-            return row.map((obj): Cell => new Cell(obj));
-        });
-        return clonedGridWithCells;
     }
 }
