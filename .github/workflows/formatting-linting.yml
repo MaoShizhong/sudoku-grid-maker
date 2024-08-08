@@ -1,0 +1,20 @@
+name: CI
+on:
+  pull_request:
+    paths:
+      - '**/*.ts'
+      - '**/*.json'
+      - '**/*.yml'
+      - '**/*.yaml'
+
+jobs:
+  format_lint:
+    name: Check formatting and linting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: 'package.json'
+      - run: npm install
+      - run: npx prettier --check . && npm run lint
