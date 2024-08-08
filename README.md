@@ -1,4 +1,4 @@
-# SudokuMaker
+# Sudoku Grid Maker
 
 A playable sudoku grid maker (not generator). Supports pencil marks and grid history for undo/redo.
 
