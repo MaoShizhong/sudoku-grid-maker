@@ -20,6 +20,41 @@ describe('Sudoku grid', (): void => {
     });
 });
 
+describe('Starting values', (): void => {
+    const CELL_VALUES = [null, 1, 2, 3, 4, 5, 6, 7, 8, 9] as const;
+    function generateRandomValuesArray(): CellValue[][] {
+        const valuesArray: CellValue[][] = [];
+        for (let i = 0; i < 9; i++) {
+            const row: CellValue[] = [];
+            for (let j = 0; j < 9; j++) {
+                const randomCellValue =
+                    CELL_VALUES[Math.floor(Math.random() * CELL_VALUES.length)];
+                row.push(randomCellValue);
+            }
+            valuesArray.push(row);
+        }
+        return valuesArray;
+    }
+
+    it('initialises all grid values as null if no constructor argument', (): void => {
+        const sudoku = new Sudoku();
+        expect(JSON.stringify(sudoku)).toBe(
+            '[[null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null]]'
+        );
+    });
+
+    it('initialises grid with populated values based on constructor input array', (): void => {
+        const RANDOM_TEST_COUNT = 10;
+        for (let i = 0; i < RANDOM_TEST_COUNT; i++) {
+            const randomValuesArray = generateRandomValuesArray();
+            const randomValuesArrayString = JSON.stringify(randomValuesArray);
+
+            const sudoku = new Sudoku(randomValuesArray);
+            expect(JSON.stringify(sudoku)).toBe(randomValuesArrayString);
+        }
+    });
+});
+
 describe('Methods', (): void => {
     describe('addNumber', (): void => {
         it('does nothing if targeting out of bounds of the grid', (): void => {
