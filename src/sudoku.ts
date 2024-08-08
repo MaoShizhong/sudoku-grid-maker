@@ -3,6 +3,7 @@ import { PlacementError } from './error';
 import { PuzzleHistory } from './puzzle-history';
 import {
     Box,
+    CellValue,
     Coordinate,
     PlacementErrorDetails,
     SudokuNumber,
@@ -16,8 +17,8 @@ export default class Sudoku {
     grid: SudokuPuzzle;
     history: PuzzleHistory;
 
-    constructor() {
-        this.grid = this.#createGrid();
+    constructor(valueArray?: CellValue[][]) {
+        this.grid = this.#createGrid(valueArray);
         this.history = new PuzzleHistory(this.grid);
     }
 
@@ -189,16 +190,27 @@ export default class Sudoku {
         }
     }
 
-    #createGrid(): SudokuPuzzle {
+    #createGrid(valuesArray?: CellValue[][]): SudokuPuzzle {
         const grid: SudokuPuzzle = [];
         for (let i = 0; i < Sudoku.#BOARD_RESOLUTION; i++) {
             const row: Cell[] = [];
             for (let j = 0; j < Sudoku.#BOARD_RESOLUTION; j++) {
-                row.push(new Cell({ row: i, column: j }));
+                const cellValue = valuesArray?.[i][j] ?? null;
+                row.push(new Cell({ value: cellValue, row: i, column: j }));
             }
             grid.push(row);
         }
         return grid;
+    }
+
+    toJSON(): CellValue[][] {
+        return this.grid.map((row): CellValue[] =>
+            row.map((cell): CellValue => cell.value)
+        );
+    }
+
+    toString(): string {
+        return JSON.stringify(this);
     }
 
     static #generateBoxesCoordinates(): Box[] {
