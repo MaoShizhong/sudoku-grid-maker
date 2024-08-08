@@ -1,5 +1,5 @@
+import Sudoku from '..';
 import { Cell } from '../cell';
-import Sudoku from '../sudoku';
 import { CellValue } from '../types';
 
 describe('Sudoku grid', (): void => {

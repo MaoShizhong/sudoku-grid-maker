@@ -1,4 +1,4 @@
-import Sudoku from '../sudoku';
+import Sudoku from '..';
 
 describe('History', (): void => {
     describe('Grid state history array', (): void => {
