@@ -5,17 +5,17 @@ A playable sudoku grid maker (not generator). Supports pencil marks and grid his
 ## Install
 
 ```bash
-npm install sudoku-maker
+npm install sudoku-grid-maker
 ```
 
 ## Usage
 
 ```javascript
 // CJS
-const Sudoku = require('sudoku-maker');
+const Sudoku = require('sudoku-grid-maker');
 
 // ESM
-import Sudoku from 'sudoku-maker';
+import Sudoku from 'sudoku-grid-maker';
 
 // create new empty grid
 const sudoku = new Sudoku();
