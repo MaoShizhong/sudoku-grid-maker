@@ -10,15 +10,15 @@ import {
     SudokuPuzzle,
 } from './types';
 
-export default class Sudoku {
+class Sudoku {
     static #BOARD_RESOLUTION = 9;
     static #boxesCoordinates = Sudoku.#generateBoxesCoordinates();
 
     grid: SudokuPuzzle;
     history: PuzzleHistory;
 
-    constructor(valueArray?: CellValue[][]) {
-        this.grid = this.#createGrid(valueArray);
+    constructor(startingValues?: CellValue[][]) {
+        this.grid = this.#createGrid(startingValues);
         this.history = new PuzzleHistory(this.grid);
     }
 
@@ -258,3 +258,6 @@ export default class Sudoku {
         );
     }
 }
+
+export default Sudoku;
+module.exports = Sudoku;
