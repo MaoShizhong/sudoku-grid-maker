@@ -1,6 +1,6 @@
 {
     "name": "sudoku-grid-maker",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "author": "MaoShizhong",
     "description": "A playable sudoku grid maker (not generator). Supports pencil marks and grid history for undo/redo.",
     "repository": {

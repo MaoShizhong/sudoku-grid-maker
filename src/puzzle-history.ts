@@ -47,6 +47,11 @@ export class PuzzleHistory {
         return this.currentGridState;
     }
 
+    reset(): void {
+        this.#currentGridStateIndex = 0;
+        this.#gridStates = [this.#gridStates[0]];
+    }
+
     recordNewGridState(gridState: SudokuPuzzle): void {
         const gridStateCopy = JSON.stringify(gridState);
         this.#currentGridStateIndex++;
