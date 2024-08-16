@@ -118,6 +118,22 @@ describe('History', (): void => {
         });
     });
 
+    describe('reset', (): void => {
+        it('resets grid state history to starting grid state', (): void => {
+            const sudoku = new Sudoku();
+            const emptyGrid = new Sudoku().grid;
+
+            sudoku.addNumber({ newNumber: 1, row: 1, column: 1 });
+            sudoku.addNumber({ newNumber: 2, row: 2, column: 2 });
+            sudoku.addNumber({ newNumber: 3, row: 3, column: 3 });
+            sudoku.reset();
+
+            expect(sudoku.grid).toEqual(emptyGrid);
+            expect(sudoku.grid).toEqual(sudoku.history.currentGridState);
+            expect(sudoku.history.gridStatesCount).toBe(1);
+        });
+    });
+
     describe('Recording new grid states after undoing', (): void => {
         it('removes all proceeding grid states in history if recording new grid state after undoing', (): void => {
             const emptyGrid = new Sudoku().grid;

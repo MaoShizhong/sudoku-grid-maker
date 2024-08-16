@@ -97,6 +97,11 @@ class Sudoku {
         this.grid = this.history.toNextGridState();
     }
 
+    reset(): void {
+        this.history.reset();
+        this.grid = this.history.currentGridState;
+    }
+
     #checkPlacementValidity(
         targetCell: Cell,
         number: SudokuNumber
