@@ -2,6 +2,27 @@ import Sudoku from '..';
 import { Cell } from '../cell';
 import { CellValue } from '../types';
 
+const CELL_VALUES = [null, 1, 2, 3, 4, 5, 6, 7, 8, 9] as const;
+function generateRandomValuesArray(): CellValue[][] {
+    const valuesArray: CellValue[][] = [];
+    for (let i = 0; i < 9; i++) {
+        const row: CellValue[] = [];
+        for (let j = 0; j < 9; j++) {
+            const randomCellValue =
+                CELL_VALUES[Math.floor(Math.random() * CELL_VALUES.length)];
+            row.push(randomCellValue);
+        }
+        valuesArray.push(row);
+    }
+    return valuesArray;
+}
+
+const TEST_STARTING_VALUES: CellValue[][] = [
+    [1, null, null, null, null, null, null, null, null],
+    ...Array.from({ length: 8 }, (): null[] => Array(9).fill(null)),
+];
+const TEST_STARTING_VALUES_STRING = JSON.stringify(TEST_STARTING_VALUES);
+
 describe('Sudoku grid', (): void => {
     const sudoku = new Sudoku();
 
@@ -21,21 +42,6 @@ describe('Sudoku grid', (): void => {
 });
 
 describe('Starting values', (): void => {
-    const CELL_VALUES = [null, 1, 2, 3, 4, 5, 6, 7, 8, 9] as const;
-    function generateRandomValuesArray(): CellValue[][] {
-        const valuesArray: CellValue[][] = [];
-        for (let i = 0; i < 9; i++) {
-            const row: CellValue[] = [];
-            for (let j = 0; j < 9; j++) {
-                const randomCellValue =
-                    CELL_VALUES[Math.floor(Math.random() * CELL_VALUES.length)];
-                row.push(randomCellValue);
-            }
-            valuesArray.push(row);
-        }
-        return valuesArray;
-    }
-
     it('initialises all grid values as null if no constructor argument', (): void => {
         const sudoku = new Sudoku();
         expect(JSON.stringify(sudoku)).toBe(
@@ -68,6 +74,13 @@ describe('Methods', (): void => {
 
             expect(valuesInGrid.size).toBe(1);
             expect(valuesInGrid.has(null)).toBe(true);
+        });
+
+        it('does nothing if target cell started with a number value (locked)', (): void => {
+            const sudoku = new Sudoku(TEST_STARTING_VALUES);
+
+            sudoku.addNumber({ newNumber: 6, row: 0, column: 0 });
+            expect(JSON.stringify(sudoku)).toBe(TEST_STARTING_VALUES_STRING);
         });
 
         it('sets single digit number to cell if not already in row/column/box', (): void => {
@@ -157,6 +170,13 @@ describe('Methods', (): void => {
             expect(valuesInGrid.has(null)).toBe(true);
         });
 
+        it('does nothing if target cell started with a number value (locked)', (): void => {
+            const sudoku = new Sudoku(TEST_STARTING_VALUES);
+
+            sudoku.removeNumber({ row: 0, column: 0 });
+            expect(JSON.stringify(sudoku)).toBe(TEST_STARTING_VALUES_STRING);
+        });
+
         it("removes a cell's number", (): void => {
             const sudoku = new Sudoku();
 
@@ -184,6 +204,13 @@ describe('Methods', (): void => {
             );
 
             expect(hasPencilMarksAdded).toBe(false);
+        });
+
+        it('does nothing if target cell has a number value', (): void => {
+            const sudoku = new Sudoku(TEST_STARTING_VALUES);
+
+            sudoku.addPencilMark({ number: 6, row: 0, column: 0 });
+            expect(sudoku.grid[0][0].pencilMarks.length).toBe(0);
         });
 
         it('adds a pencil mark to a cell with no pencil marks', (): void => {
