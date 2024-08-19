@@ -5,12 +5,18 @@ export class Cell implements CellProps {
     row: number;
     column: number;
     pencilMarks: SudokuNumber[];
+    #isLocked: boolean;
 
     constructor({ value = null, row, column, pencilMarks = [] }: CellProps) {
         this.value = value;
         this.row = row;
         this.column = column;
         this.pencilMarks = pencilMarks;
+        this.#isLocked = Boolean(value);
+    }
+
+    get isLocked(): boolean {
+        return this.#isLocked;
     }
 
     addPencilMark(number: SudokuNumber): void {

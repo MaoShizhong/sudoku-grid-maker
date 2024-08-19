@@ -32,7 +32,11 @@ class Sudoku {
         column: number;
     }): void {
         const targetCell = this.grid[row]?.[column];
-        if (!targetCell || targetCell.value === newNumber) {
+        if (
+            !targetCell ||
+            targetCell.value === newNumber ||
+            targetCell.isLocked
+        ) {
             return;
         }
 
@@ -51,7 +55,7 @@ class Sudoku {
 
     removeNumber({ row, column }: { row: number; column: number }): void {
         const targetCell = this.grid[row]?.[column];
-        if (targetCell) {
+        if (targetCell && !targetCell.isLocked) {
             targetCell.value = null;
             this.history.recordNewGridState(this.grid);
         }
@@ -111,7 +115,13 @@ class Sudoku {
             isAlreadyInRow: false,
             isAlreadyInColumn: false,
             isAlreadyInBox: false,
+            isLocked: false,
         };
+
+        if (targetCell.isLocked) {
+            placementErrorDetails.isLocked = true;
+            return [false, placementErrorDetails];
+        }
 
         for (let row = 0; row < this.grid.length; row++) {
             for (let column = 0; column < this.grid[row].length; column++) {

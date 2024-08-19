@@ -40,7 +40,7 @@ sudoku.redo();
 
 #### startingValues (optional)
 
-A 9x9 2D array containing the numbers 1-9 or null, representing the starting cell values of the grid. If not provided, all cells will be initialised with null values.
+A 9x9 2D array containing the numbers 1-9 or null, representing the starting cell values of the grid. If not provided, all cells will be initialised with null values. Any cells that start with number values will be locked (cannot edit values/pencil marks).
 
 ### addNumber({ newNumber, row, column })
 

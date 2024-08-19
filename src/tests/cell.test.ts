@@ -41,6 +41,13 @@ describe('pencil marks', (): void => {
             cell.addPencilMark(5);
             expect(cell.pencilMarks.length).toBe(0);
         });
+
+        it('does not add pencil marks if locked', (): void => {
+            const cell = new Cell({ row: 0, column: 0 });
+            cell.value = 2;
+            cell.addPencilMark(5);
+            expect(cell.pencilMarks.length).toBe(0);
+        });
     });
 
     describe('removePencilMark', (): void => {
