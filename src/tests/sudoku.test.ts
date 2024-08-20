@@ -76,8 +76,8 @@ describe('Methods', (): void => {
             expect(valuesInGrid.has(null)).toBe(true);
         });
 
-        it('does nothing if target cell started with a number value (locked)', (): void => {
-            const sudoku = new Sudoku(TEST_STARTING_VALUES);
+        it('does nothing if target cell is locked', (): void => {
+            const sudoku = new Sudoku(TEST_STARTING_VALUES, true);
 
             sudoku.addNumber({ newNumber: 6, row: 0, column: 0 });
             expect(JSON.stringify(sudoku)).toBe(TEST_STARTING_VALUES_STRING);
@@ -170,8 +170,8 @@ describe('Methods', (): void => {
             expect(valuesInGrid.has(null)).toBe(true);
         });
 
-        it('does nothing if target cell started with a number value (locked)', (): void => {
-            const sudoku = new Sudoku(TEST_STARTING_VALUES);
+        it('does nothing if target cell is locked', (): void => {
+            const sudoku = new Sudoku(TEST_STARTING_VALUES, true);
 
             sudoku.removeNumber({ row: 0, column: 0 });
             expect(JSON.stringify(sudoku)).toBe(TEST_STARTING_VALUES_STRING);

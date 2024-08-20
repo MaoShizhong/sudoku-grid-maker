@@ -16,8 +16,10 @@ class Sudoku {
 
     grid: SudokuPuzzle;
     history: PuzzleHistory;
+    #shouldLockStartNums: boolean;
 
-    constructor(startingValues?: CellValue[][]) {
+    constructor(startingValues?: CellValue[][], shouldLockStartNums = false) {
+        this.#shouldLockStartNums = shouldLockStartNums;
         this.grid = this.#createGrid(startingValues);
         this.history = new PuzzleHistory(this.grid);
     }
@@ -197,7 +199,14 @@ class Sudoku {
             const row: Cell[] = [];
             for (let j = 0; j < Sudoku.#BOARD_RESOLUTION; j++) {
                 const cellValue = valuesArray?.[i][j] ?? null;
-                row.push(new Cell({ value: cellValue, row: i, column: j }));
+                row.push(
+                    new Cell({
+                        value: cellValue,
+                        row: i,
+                        column: j,
+                        isLocked: this.#shouldLockStartNums,
+                    })
+                );
             }
             grid.push(row);
         }

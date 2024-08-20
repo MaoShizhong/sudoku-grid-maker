@@ -16,6 +16,7 @@ export type CellProps = {
     row: number;
     column: number;
     pencilMarks?: SudokuNumber[];
+    isLocked: boolean;
 };
 
 export type Coordinate = { row: number; column: number };
