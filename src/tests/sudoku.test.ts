@@ -111,9 +111,9 @@ describe('Methods', (): void => {
 
         it('clears target cell pencil marks when changing its value', (): void => {
             const sudoku = new Sudoku();
-            sudoku.addPencilMark({ number: 5, row: 0, column: 0 });
-            sudoku.addPencilMark({ number: 6, row: 0, column: 0 });
-            sudoku.addPencilMark({ number: 8, row: 0, column: 0 });
+            sudoku.togglePencilMark({ number: 5, row: 0, column: 0 });
+            sudoku.togglePencilMark({ number: 6, row: 0, column: 0 });
+            sudoku.togglePencilMark({ number: 8, row: 0, column: 0 });
             sudoku.addNumber({ newNumber: 8, row: 0, column: 0 });
 
             expect(sudoku.grid[0][0].pencilMarks.length).toBe(0);
@@ -193,11 +193,11 @@ describe('Methods', (): void => {
         });
     });
 
-    describe('addPencilMark', (): void => {
+    describe('togglePencilMark', (): void => {
         it('does nothing if targeting out of bounds of the grid', (): void => {
             const sudoku = new Sudoku();
 
-            sudoku.addPencilMark({ number: 5, row: 234, column: 10 });
+            sudoku.togglePencilMark({ number: 5, row: 234, column: 10 });
             const gridCells = sudoku.grid.flat();
             const hasPencilMarksAdded = gridCells.some(
                 (cell): boolean => cell.pencilMarks.length > 0
@@ -209,18 +209,18 @@ describe('Methods', (): void => {
         it('does nothing if target cell has a number value', (): void => {
             const sudoku = new Sudoku(TEST_STARTING_VALUES);
 
-            sudoku.addPencilMark({ number: 6, row: 0, column: 0 });
+            sudoku.togglePencilMark({ number: 6, row: 0, column: 0 });
             expect(sudoku.grid[0][0].pencilMarks.length).toBe(0);
         });
 
         it('adds a pencil mark to a cell with no pencil marks', (): void => {
             const sudoku = new Sudoku();
 
-            sudoku.addPencilMark({ number: 2, row: 4, column: 6 });
+            sudoku.togglePencilMark({ number: 2, row: 4, column: 6 });
             expect(sudoku.grid[4][6].pencilMarks.length).toBe(1);
             expect(sudoku.grid[4][6].pencilMarks.includes(2)).toBe(true);
 
-            sudoku.addPencilMark({ number: 5, row: 1, column: 1 });
+            sudoku.togglePencilMark({ number: 5, row: 1, column: 1 });
             expect(sudoku.grid[1][1].pencilMarks.length).toBe(1);
             expect(sudoku.grid[1][1].pencilMarks.includes(5)).toBe(true);
         });
@@ -228,21 +228,19 @@ describe('Methods', (): void => {
         it('adds a pencil mark to a cell with existing pencil marks', (): void => {
             const sudoku = new Sudoku();
 
-            sudoku.addPencilMark({ number: 5, row: 1, column: 1 });
+            sudoku.togglePencilMark({ number: 5, row: 1, column: 1 });
             expect(sudoku.grid[1][1].pencilMarks.length).toBe(1);
             expect(sudoku.grid[1][1].pencilMarks.includes(5)).toBe(true);
 
-            sudoku.addPencilMark({ number: 8, row: 1, column: 1 });
+            sudoku.togglePencilMark({ number: 8, row: 1, column: 1 });
             expect(sudoku.grid[1][1].pencilMarks.length).toBe(2);
             expect(sudoku.grid[1][1].pencilMarks.includes(8)).toBe(true);
         });
-    });
 
-    describe('removePencilMark', (): void => {
         it('does nothing if targeting out of bounds of the grid', (): void => {
             const sudoku = new Sudoku();
 
-            sudoku.removePencilMark({ number: 5, row: 234, column: 10 });
+            sudoku.togglePencilMark({ number: 5, row: 234, column: 10 });
             const gridCells = sudoku.grid.flat();
             const hasPencilMarksAdded = gridCells.some(
                 (cell): boolean => cell.pencilMarks.length > 0
@@ -251,23 +249,16 @@ describe('Methods', (): void => {
             expect(hasPencilMarksAdded).toBe(false);
         });
 
-        it("does nothing if target pencil mark doesn't exist", (): void => {
+        it('removes an existing pencil mark from a cell', (): void => {
             const sudoku = new Sudoku();
 
-            sudoku.removePencilMark({ number: 5, row: 0, column: 0 });
-            expect(sudoku.grid[0][0].pencilMarks.length).toBe(0);
-        });
-
-        it('removes a pencil mark from a cell', (): void => {
-            const sudoku = new Sudoku();
-
-            sudoku.addPencilMark({ number: 2, row: 4, column: 6 });
-            sudoku.removePencilMark({ number: 2, row: 4, column: 6 });
+            sudoku.togglePencilMark({ number: 2, row: 4, column: 6 });
+            sudoku.togglePencilMark({ number: 2, row: 4, column: 6 });
             expect(sudoku.grid[4][6].pencilMarks.length).toBe(0);
 
-            sudoku.addPencilMark({ number: 5, row: 1, column: 1 });
-            sudoku.addPencilMark({ number: 8, row: 1, column: 1 });
-            sudoku.removePencilMark({ number: 5, row: 1, column: 1 });
+            sudoku.togglePencilMark({ number: 5, row: 1, column: 1 });
+            sudoku.togglePencilMark({ number: 8, row: 1, column: 1 });
+            sudoku.togglePencilMark({ number: 5, row: 1, column: 1 });
             expect(sudoku.grid[1][1].pencilMarks.length).toBe(1);
             expect(sudoku.grid[1][1].pencilMarks.includes(8)).toBe(true);
         });
@@ -278,11 +269,11 @@ describe('Number/pencil mark interactions', (): void => {
     it('removes matching pencil marks from Regions with target cell when setting number', (): void => {
         const sudoku = new Sudoku();
 
-        sudoku.addPencilMark({ number: 2, row: 3, column: 3 });
-        sudoku.addPencilMark({ number: 4, row: 3, column: 3 });
-        sudoku.addPencilMark({ number: 9, row: 3, column: 3 });
-        sudoku.addPencilMark({ number: 2, row: 4, column: 8 });
-        sudoku.addPencilMark({ number: 2, row: 8, column: 4 });
+        sudoku.togglePencilMark({ number: 2, row: 3, column: 3 });
+        sudoku.togglePencilMark({ number: 4, row: 3, column: 3 });
+        sudoku.togglePencilMark({ number: 9, row: 3, column: 3 });
+        sudoku.togglePencilMark({ number: 2, row: 4, column: 8 });
+        sudoku.togglePencilMark({ number: 2, row: 8, column: 4 });
 
         // Add number to central cell, so row 4, column 4, box 4 (0-indexed)
         sudoku.addNumber({ newNumber: 2, row: 4, column: 4 });

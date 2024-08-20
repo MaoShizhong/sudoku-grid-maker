@@ -61,7 +61,7 @@ class Sudoku {
         }
     }
 
-    addPencilMark({
+    togglePencilMark({
         number,
         row,
         column,
@@ -72,23 +72,7 @@ class Sudoku {
     }): void {
         const targetCell = this.grid[row]?.[column];
         if (targetCell) {
-            targetCell.addPencilMark(number);
-            this.history.recordNewGridState(this.grid);
-        }
-    }
-
-    removePencilMark({
-        number,
-        row,
-        column,
-    }: {
-        number: SudokuNumber;
-        row: number;
-        column: number;
-    }): void {
-        const targetCell = this.grid[row]?.[column];
-        if (targetCell) {
-            targetCell.removePencilMark(number);
+            targetCell.togglePencilMark(number);
             this.history.recordNewGridState(this.grid);
         }
     }
@@ -201,7 +185,9 @@ class Sudoku {
         ];
 
         for (const cell of matchingRegionCells) {
-            cell.removePencilMark(value);
+            if (cell.pencilMarks.includes(value)) {
+                cell.togglePencilMark(value);
+            }
         }
     }
 

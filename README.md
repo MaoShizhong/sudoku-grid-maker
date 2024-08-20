@@ -29,9 +29,11 @@ const sudoku = new Sudoku(initialCellValues);
 sudoku.addNumber({ newNumber: 6, row: 2, column: 0 });
 sudoku.removeNumber({ row: 2, column: 0 });
 sudoku.undo();
-sudoku.addPencilMark({ number: 9, row: 0, column: 0 });
-sudoku.removePencilMark({ number: 9, row: 0, column: 0 });
+sudoku.togglePencilMark({ number: 9, row: 0, column: 0 });
+sudoku.togglePencilMark({ number: 5, row: 0, column: 0 });
+sudoku.togglePencilMark({ number: 9, row: 0, column: 0 });
 sudoku.redo();
+sudoku.reset();
 ```
 
 ## Methods
@@ -74,39 +76,21 @@ The row number (0-8) of the cell to remove the value of (set to null).
 
 The column number (0-8) of the cell to remove the value of (set to null).
 
-### addPencilMark({ number, row, column })
+### togglePencilMark({ number, row, column })
 
-Adds a number (1-9) to a cell's pencil marks, but only if it is empty (null value) or does not already have the pencil mark.
-
-Calling this method will first clear any grid history states after the current history index, then record a new grid history state.
-
-#### addPencilMark.number
-
-The number to add to pencil marks.
-
-#### addPencilMark.row
-
-The target cell's row index (0-8).
-
-#### addPencilMark.column
-
-The target cell's column index (0-8).
-
-### removePencilMark({ number, row, column })
-
-Removes the specified pencil mark from a cell.
+If the target cell is empty (null value) or does not already have the pencil mark, adds the pencil mark number (1-9). If the pencil mark already exists, removes it instead.
 
 Calling this method will first clear any grid history states after the current history index, then record a new grid history state.
 
-#### removePencilMark.number
+#### togglePencilMark.number
 
-The pencil mark number to remove.
+The number to add to or remove from pencil marks.
 
-#### removePencilMark.row
+#### togglePencilMark.row
 
 The target cell's row index (0-8).
 
-#### removePencilMark.column
+#### togglePencilMark.column
 
 The target cell's column index (0-8).
 

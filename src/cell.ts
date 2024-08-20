@@ -19,17 +19,11 @@ export class Cell implements CellProps {
         return this.#isLocked;
     }
 
-    addPencilMark(number: SudokuNumber): void {
-        if (this.value !== null || this.pencilMarks.includes(number)) {
-            return;
-        }
-
-        this.pencilMarks.push(number);
-    }
-
-    removePencilMark(number: SudokuNumber): void {
+    togglePencilMark(number: SudokuNumber): void {
         if (this.pencilMarks.includes(number)) {
             this.pencilMarks.splice(this.pencilMarks.indexOf(number), 1);
+        } else if (this.value === null) {
+            this.pencilMarks.push(number);
         }
     }
 

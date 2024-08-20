@@ -11,10 +11,10 @@ describe('History', (): void => {
             sudoku.removeNumber({ row: 1, column: 1 });
             expect(sudoku.history.gridStatesCount).toBe(3);
 
-            sudoku.addPencilMark({ number: 2, row: 2, column: 2 });
+            sudoku.togglePencilMark({ number: 2, row: 2, column: 2 });
             expect(sudoku.history.gridStatesCount).toBe(4);
 
-            sudoku.addPencilMark({ number: 2, row: 2, column: 2 });
+            sudoku.togglePencilMark({ number: 2, row: 2, column: 2 });
             expect(sudoku.history.gridStatesCount).toBe(5);
         });
 
@@ -143,7 +143,7 @@ describe('History', (): void => {
                 sudoku.history.currentGridState
             );
             sudoku.undo();
-            sudoku.addPencilMark({ number: 8, row: 1, column: 1 });
+            sudoku.togglePencilMark({ number: 8, row: 1, column: 1 });
 
             expect(sudoku.history.gridStatesCount).toBe(2);
             expect(sudoku.grid).not.toEqual(emptyGrid);
@@ -151,13 +151,13 @@ describe('History', (): void => {
             expect(sudoku.grid).toEqual(sudoku.history.currentGridState);
 
             sudoku.addNumber({ newNumber: 3, row: 5, column: 5 });
-            sudoku.removePencilMark({ number: 8, row: 1, column: 1 });
+            sudoku.togglePencilMark({ number: 8, row: 1, column: 1 });
             expect(sudoku.history.gridStatesCount).toBe(4);
 
             sudoku.undo();
             sudoku.undo();
 
-            sudoku.removePencilMark({ number: 8, row: 1, column: 1 });
+            sudoku.togglePencilMark({ number: 8, row: 1, column: 1 });
             expect(sudoku.history.gridStatesCount).toBe(3);
             expect(sudoku.grid).toEqual(emptyGrid);
         });
