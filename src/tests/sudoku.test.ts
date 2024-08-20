@@ -59,6 +59,16 @@ describe('Starting values', (): void => {
             expect(JSON.stringify(sudoku)).toBe(randomValuesArrayString);
         }
     });
+
+    it('locks only cells that start with number values if `true` locked param', (): void => {
+        const sudoku = new Sudoku(TEST_STARTING_VALUES, true);
+
+        sudoku.addNumber({ newNumber: 6, row: 0, column: 0 });
+        expect(JSON.stringify(sudoku)).toBe(TEST_STARTING_VALUES_STRING);
+
+        sudoku.addNumber({ newNumber: 6, row: 1, column: 1 });
+        expect(JSON.stringify(sudoku)).not.toBe(TEST_STARTING_VALUES_STRING);
+    });
 });
 
 describe('Methods', (): void => {
