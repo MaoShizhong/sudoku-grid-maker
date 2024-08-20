@@ -24,7 +24,7 @@ const sudoku = new Sudoku();
 const initialCellValues = [
     // 2D array of rows of 1-9 or null
 ];
-const sudoku = new Sudoku(initialCellValues);
+const sudoku = new Sudoku(initialCellValues, true);
 
 sudoku.addNumber({ newNumber: 6, row: 2, column: 0 });
 sudoku.removeNumber({ row: 2, column: 0 });
@@ -38,11 +38,15 @@ sudoku.reset();
 
 ## Methods
 
-### constructor(startingValues?)
+### constructor(startingValues?, shouldLockStartNums?)
 
 #### startingValues (optional)
 
-A 9x9 2D array containing the numbers 1-9 or null, representing the starting cell values of the grid. If not provided, all cells will be initialised with null values. Any cells that start with number values will be locked (cannot edit values/pencil marks).
+A 9x9 2D array containing the numbers 1-9 or null, representing the starting cell values of the grid. If not provided, all cells will be initialised with null values.
+
+#### shouldLockStartNums (optional)
+
+A boolean - if true, upon grid creation, any cells that start with number values will be locked (cannot edit values/pencil marks).
 
 ### addNumber({ newNumber, row, column })
 
