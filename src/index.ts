@@ -204,7 +204,8 @@ class Sudoku {
                         value: cellValue,
                         row: i,
                         column: j,
-                        isLocked: this.#shouldLockStartNums,
+                        isLocked:
+                            this.#shouldLockStartNums && cellValue !== null,
                     })
                 );
             }
