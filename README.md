@@ -109,3 +109,7 @@ Changes the current grid state to the next recorded grid state (if one exists).
 ### reset()
 
 Resets the current grid to the original grid state and wipes the rest of the grid history.
+
+### isSolved()
+
+`true` if all cells have values in them, otherwise `false`.

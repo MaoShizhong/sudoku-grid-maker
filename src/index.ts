@@ -92,6 +92,12 @@ class Sudoku {
         this.grid = this.history.currentGridState;
     }
 
+    isSolved(): boolean {
+        return this.grid.every((row): boolean =>
+            row.every((cell) => cell.value)
+        );
+    }
+
     #checkPlacementValidity(
         targetCell: Cell,
         number: SudokuNumber
